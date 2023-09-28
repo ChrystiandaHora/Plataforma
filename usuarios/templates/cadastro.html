@@ -15,19 +15,43 @@
 <body>
     <div class="container">
         <form action="{% url 'cadastro' %}" method="post">{% csrf_token %}
+
             <div class="mb-3 ">
+                <label for="username">Usuário</label>
                 <input type="text" class="form-control" placeholder="Usuário" name="username">
+                <div class="col-auto">
+                    <span class="form-text" style="color: #000;">
+                        Deve ter mais de 3 caracteres.
+                    </span>
+                </div>
             </div>
+
             <div class="mb-3 ">
-                <input type="email" class="form-control" placeholder="E-mail" name="email">
-            </div>
-            <div class="mb-3 ">
+                <label for="password">Senha</label>
                 <input type="password" class="form-control" placeholder="Senha" name="senha">
+                <div class="col-auto">
+                    <span class="form-text" style="color: #000;">
+                        Deve ter de 8 a 20 caracteres.
+                    </span>
+                </div>
             </div>
+
+            <div class="mb-3">
+                <label for="confirm_password">Confirme a senha</label>
+                <input type="password" class="form-control" placeholder="Confirme a senha" name="confirme_senha">
+            </div>
+
+
 
             <input type="submit" class="btn btn-success" value="Cadastrar">
+            <a type="button" class="btn btn-secondary" href="{% url 'login' %}">Voltar</a>
 
         </form>
+        {% if error_message %}
+        <div class="alert alert-danger mt-3">
+            {{ error_message }}
+        </div>
+        {% endif %}
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
