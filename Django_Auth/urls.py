@@ -6,4 +6,5 @@ urlpatterns = [
     path('auth/', include('usuarios.urls')),
     path('', include('plataforma.urls')),
 
+    path('plataforma/', include('plataforma.urls')),
 ]
