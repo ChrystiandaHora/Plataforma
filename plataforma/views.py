@@ -6,7 +6,25 @@ from .forms import TransacaoForm
 
 @login_required(login_url="/auth/login")
 def plataforma(request):
-    return render(request, 'plataforma.html')
+    transacoes = Transacao.objects.filter(usuario=request.user)
+
+    entradas = 0
+    saidas = 0
+
+    for transacao in transacoes:
+        if transacao.tipo == 'E':
+            entradas += transacao.valor
+        else:
+            saidas += transacao.valor
+
+    saldo = entradas - saidas
+
+    return render(request, 'plataforma.html', {
+        'transacoes': transacoes,
+        'saldo': saldo,
+        'entradas': entradas,
+        'saidas': saidas,
+    })
 
 
 @login_required
@@ -32,14 +50,22 @@ def adicionar_transacao(request):
 
 @login_required
 def listar_transacoes(request):
-    # Calcular o saldo com base nas transações do usuário
     transacoes = Transacao.objects.filter(usuario=request.user)
 
-    saldo = 0
+    entradas = 0
+    saidas = 0
+
     for transacao in transacoes:
         if transacao.tipo == 'E':
-            saldo += transacao.valor
+            entradas += transacao.valor
         else:
-            saldo -= transacao.valor
+            saidas += transacao.valor
 
-    return render(request, 'plataforma/listar_transacoes.html', {'transacoes': transacoes, 'saldo': saldo})
+    saldo = entradas - saidas
+
+    return render(request, 'plataforma/listar_transacoes.html', {
+        'transacoes': transacoes,
+        'saldo': saldo,
+        'entradas': entradas,
+        'saidas': saidas,
+    })

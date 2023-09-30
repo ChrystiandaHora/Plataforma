@@ -1,16 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<!--<h2>Plataforma site</h2>
-<h1>Adicionar Transação</h1>
-<form method="post">{% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Adicionar</button>
-</form>
-<a href="{% url 'listar_transacoes' %}">Listar Transações</a> -->
-
 <div class="container mt-5">
-    <h2 class="mb-4">Plataforma site</h2>
     <h1 class="mb-4">Adicionar Transação</h1>
     <form method="post" class="mb-4">
         {% csrf_token %}
