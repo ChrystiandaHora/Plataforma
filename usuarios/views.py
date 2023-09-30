@@ -1,34 +1,56 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from django.contrib.auth import login as login_django
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login as login_django, logout
+from django.contrib import messages
+from django.contrib.messages import constants
 
 
 def cadastro(request):
-    if request.method == "GET":
-        return render(request, 'cadastro.html')
-    else:
+    if request.method == "POST":
         username = request.POST.get('username')
-        email = request.POST.get('email')
         senha = request.POST.get('senha')
+        confirme_senha = request.POST.get('confirme_senha')
 
-        user = User.objects.filter(username=username).first()
+        if len(username) < 3:
+            messages.add_message(request, constants.ERROR,
+                                 'O nome de usuário deve conter pelo menos 3 caracteres.')
+            return redirect('cadastro')
 
-        if user:
-            return HttpResponse('Já existe um usuário com esse username')
+            # error_message = 'O nome de usuário deve conter pelo menos 3 caracteres.'
+        elif User.objects.filter(username=username).exists():
+            messages.add_message(request, constants.ERROR,
+                                 'Já existe um usuário com esse nome.')
+            return redirect('cadastro')
 
-        user = User.objects.create_user(
-            username=username, email=email, password=senha)
-        user.save()
-        return HttpResponse('Usuário cadastrado com sucesso!')
+            # error_message = 'Já existe um usuário com esse nome.'
+        elif not (8 <= len(senha) <= 20):
+            messages.add_message(request, constants.ERROR,
+                                 'A senha deve conter entre 8 e 20 caracteres.')
+            return redirect('cadastro')
+
+            # error_message = 'A senha deve conter entre 8 e 20 caracteres.'
+        elif senha != confirme_senha:
+            messages.add_message(request, constants.ERROR,
+                                 'As senhas não coincidem.')
+            return redirect('cadastro')
+
+            # error_message = 'As senhas não coincidem.'
+        else:
+            user = User.objects.create_user(
+                username=username, password=senha)
+            user.save()
+            messages.add_message(request, constants.SUCCESS,
+                                 'Cadastro realizado com sucesso')
+            return redirect('login')
+
+        # return render(request, 'cadastro.html', {'error_message': error_message})
+    else:
+        return render(request, 'cadastro.html')
 
 
 def login(request):
-    if request.method == "GET":
-        return render(request, 'login.html')
-    else:
+    if request.method == "POST":
         username = request.POST.get('username')
         senha = request.POST.get('senha')
 
@@ -36,12 +58,15 @@ def login(request):
 
         if user:
             login_django(request, user)
-
-            return HttpResponse('Autenticado')
+            return redirect('plataforma')
         else:
-            return HttpResponse('Usuario ou senha inválidos')
+            messages.add_message(request, constants.ERROR,
+                                 'Usuário ou senha inválidos.')
+            return redirect('login')
+    else:
+        return render(request, 'login.html')
 
 
-@login_required(login_url="/auth/login/")
-def plataforma(request):
-    return HttpResponse('Entrou na Plataforma')
+def sair(request):
+    logout(request)
+    return redirect('login')
