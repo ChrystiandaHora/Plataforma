@@ -4,13 +4,12 @@
 <link rel="stylesheet" type="text/css" href="{% static 'plataforma/css/stylelistagem.css' %}">
 
 <div class="m-3 text-center">
-    <h2 class="mb-4">Extrato Transações</h2>
+    <h2 class="m-2">Extrato Transações</h2>
 </div>
 
-<div class="container mt-5">
-
+<div class="col-md-11 col-lg-11 mx-auto">
     <div class="row">
-        <div class="col-sm text-center">
+        <div class="col-md-4 text-center mb-3">
             <div class="card">
                 <div class="card-body">
                     Entradas
@@ -18,7 +17,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm text-center">
+        <div class="col-md-4 text-center mb-3">
             <div class="card">
                 <div class="card-body">
                     Saídas
@@ -26,51 +25,89 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm text-center">
+        <div class="col-md-4 text-center mb-3">
             <div class="card">
                 <div class="card-body">
                     Total
-                    <h2>R$ {{ saldo }}</h2>
+                    <h3>R$ {{ saldo }}</h3>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row mt-4">
-        <div class="col-sm-12 text-center">
-            <div class="card">
-                <div class="card-body">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th scope="col">Descrição</th>
-                                <th scope="col">Valor</th>
-                                <th scope="col">Data</th>
-                                <th scope="col">Tipo</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for transacao in transacoes %}
-                            <tr>
-                                <td>{{ transacao.descricao }}</td>
-                                <td>R$ {{ transacao.valor }}</td>
-                                <td>{{ transacao.data|date:"SHORT_DATE_FORMAT" }}</td>
-                                <td>
-                                    {% if transacao.tipo == 'E' %}
-                                    <span class="badge badge-success">Entrada</span>
-                                    {% else %}
-                                    <span class="badge badge-danger">Saída</span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+
+    <!-- TABELA -->
+    <div class="row m-2">
+        <div class="col-sm-12 text-center card">
+            <div class="card-body">
+                <table class="table table-striped table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Descrição</th>
+                            <th scope="col">Valor</th>
+                            <th scope="col">Data</th>
+                            <th scope="col">Tipo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transacao in transacoes %}
+                        <tr>
+                            <td>{{ transacao.descricao }}</td>
+                            <td>R$ {{ transacao.valor }}</td>
+                            <td>{{ transacao.data|date:"SHORT_DATE_FORMAT" }}</td>
+                            <td>
+                                {% if transacao.tipo == 'E' %}
+                                <span class="badge badge-success">Entrada</span>
+                                {% else %}
+                                <span class="badge badge-danger">Saída</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
+    </div>
+
+    <!-- PASSADOR DE PAGINAS DA TABELA -->
+    <div class="p-2 m-2">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-end">
+                {% if transacoes.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">&laquo;</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ transacoes.previous_page_number }}">&lsaquo;</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&laquo;</span>
+                </li>
+                {% endif %}
+
+                {% for page_num in transacoes.paginator.page_range %}
+                <li class="page-item {% if page_num == transacoes.number %}active{% endif %}">
+                    <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                </li>
+                {% endfor %}
+
+                {% if transacoes.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ transacoes.next_page_number }}">&rsaquo;</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ transacoes.paginator.num_pages }}">&raquo;</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&rsaquo;</span>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
     </div>
 
 </div>
-
 {% endblock %}

@@ -8,6 +8,6 @@ class TransacaoForm(forms.ModelForm):
         fields = ['descricao', 'valor', 'tipo']
         widgets = {
             'descricao': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Descricao'}),
-            'valor': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Valor'}),
+            'valor': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Valor', 'step': '0.01'}),
             'tipo': forms.Select(attrs={'class': 'form-select', 'placeholder': 'Tipo'}),
         }

@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, PageNotAnInteger
 from .models import Transacao
 from .forms import TransacaoForm
 
@@ -27,7 +28,7 @@ def plataforma(request):
     })
 
 
-@login_required
+@login_required(login_url="/auth/login")
 def adicionar_transacao(request):
     if request.method == 'POST':
         form = TransacaoForm(request.POST)
@@ -42,14 +43,26 @@ def adicionar_transacao(request):
     return render(request, 'plataforma/adicionar_transacao.html', {'form': form})
 
 
-@login_required
+@login_required(login_url="/auth/login")
 def listar_transacoes(request):
     transacoes = Transacao.objects.filter(usuario=request.user)
+
+    registros_por_pagina = 10
+    paginator = Paginator(transacoes, registros_por_pagina)
+
+    page = request.GET.get('page', 1)
+
+    try:
+        transacoes_pagina = paginator.page(page)
+    except PageNotAnInteger:
+        transacoes_pagina = paginator.page(1)
+    except EmptyPage:
+        transacoes_pagina = paginator.page(paginator.num_pages)
 
     entradas = 0
     saidas = 0
 
-    for transacao in transacoes:
+    for transacao in transacoes_pagina:
         if transacao.tipo == 'E':
             entradas += transacao.valor
         else:
@@ -58,7 +71,7 @@ def listar_transacoes(request):
     saldo = entradas - saidas
 
     return render(request, 'plataforma/listar_transacoes.html', {
-        'transacoes': transacoes,
+        'transacoes': transacoes_pagina,
         'saldo': saldo,
         'entradas': entradas,
         'saidas': saidas,

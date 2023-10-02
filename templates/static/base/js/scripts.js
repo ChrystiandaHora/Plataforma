@@ -17,13 +17,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (colorPreferenceUpdated === "true") {
         localStorage.setItem("colorPreferenceUpdated", "false");// Marcar como atualizado e redefinir a preferência de cor
-        colorSwitch.checked = savedColorPreference === "#000";// Atualizar o estado do botão
+        colorSwitch.checked = savedColorPreference === "#1F1F1F";// Atualizar o estado do botão
     }
 
     colorSwitch.addEventListener("change", function () {
         if (colorSwitch.checked) {
             body.style.backgroundColor = "#000";
-            saveColorPreference("#000");
+            saveColorPreference("#1F1F1F");
         } else {
             body.style.backgroundColor = "#fff";
             saveColorPreference("#fff");
