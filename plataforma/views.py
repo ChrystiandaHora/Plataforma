@@ -28,12 +28,6 @@ def plataforma(request):
 
 
 @login_required
-def listar_transacoes(request):
-    transacoes = Transacao.objects.filter(usuario=request.user)
-    return render(request, 'plataforma/listar_transacoes.html', {'transacoes': transacoes})
-
-
-@login_required
 def adicionar_transacao(request):
     if request.method == 'POST':
         form = TransacaoForm(request.POST)
