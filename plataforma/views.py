@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger
 from .models import Transacao
 from .forms import TransacaoForm
+from django.utils.timezone import now
 
 
 @login_required(login_url="/auth/login")
@@ -26,21 +27,6 @@ def plataforma(request):
         'entradas': entradas,
         'saidas': saidas,
     })
-
-
-@login_required(login_url="/auth/login")
-def adicionar_transacao(request):
-    if request.method == 'POST':
-        form = TransacaoForm(request.POST)
-        if form.is_valid():
-            # Associa transação ao usuário atualmente logado
-            nova_transacao = form.save(commit=False)
-            nova_transacao.usuario = request.user
-            nova_transacao.save()
-            return redirect('listar_transacoes')
-    else:
-        form = TransacaoForm()
-    return render(request, 'plataforma/adicionar_transacao.html', {'form': form})
 
 
 @login_required(login_url="/auth/login")
@@ -76,3 +62,31 @@ def listar_transacoes(request):
         'entradas': entradas,
         'saidas': saidas,
     })
+
+
+@login_required(login_url="/auth/login")
+def adicionar_transacao(request):
+    if request.method == 'POST':
+        form = TransacaoForm(request.POST)
+        if form.is_valid():
+            # Associa transação ao usuário atualmente logado
+            nova_transacao = form.save(commit=False)
+            nova_transacao.usuario = request.user
+
+            num_parcelas = form.cleaned_data.get('parcela')
+
+            if num_parcelas:
+                valor_parcela = nova_transacao.valor / num_parcelas
+                for _ in range(num_parcelas):
+                    nova_transacao.pk = None
+                    nova_transacao.valor = valor_parcela
+                    nova_transacao.data = now()
+                    nova_transacao.save()
+            else:
+                nova_transacao.data = now()
+                nova_transacao.save()
+
+            return redirect('listar_transacoes')
+    else:
+        form = TransacaoForm()
+    return render(request, 'plataforma/adicionar_transacao.html', {'form': form})

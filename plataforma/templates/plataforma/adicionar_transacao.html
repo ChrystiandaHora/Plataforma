@@ -28,6 +28,14 @@
                     <label for="{{ form.tipo.id_for_label }}">Tipo</label>
                 </div>
             </div>
+
+            <div class="mb-3 col-md-12 col-lg-2">
+                <div class="form-floating">
+                    {{ form.parcela }}
+                    <label for="{{ form.parcela.id_for_label }}">Parcela</label>
+                </div>
+            </div>
+
         </div>
         <button type="submit" class="btn btn-primary">Adicionar</button>
         <a href="{% url 'listar_transacoes' %}" class="btn btn-secondary">Listar Transações</a>
