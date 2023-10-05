@@ -31,7 +31,8 @@ def plataforma(request):
 
 @login_required(login_url="/auth/login")
 def listar_transacoes(request):
-    transacoes = Transacao.objects.filter(usuario=request.user)
+    transacoes = Transacao.objects.filter(
+        usuario=request.user).order_by('-data')
 
     registros_por_pagina = 10
     paginator = Paginator(transacoes, registros_por_pagina)
@@ -48,7 +49,7 @@ def listar_transacoes(request):
     entradas = 0
     saidas = 0
 
-    for transacao in transacoes_pagina:
+    for transacao in transacoes:
         if transacao.tipo == 'E':
             entradas += transacao.valor
         else:
