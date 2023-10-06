@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="m-3 text-center">
+    <h2 class="mb-4">Adicionar Transação</h2>
+</div>
+
+<div class="container mt-5">
+    <form method="post" class="mb-4"> {% csrf_token %}
+        <div class="row g-2">
+            <div class="mb-3 col-md-12 col-lg-5">
+                <div class="form-floating">
+                    {{ form.descricao }}
+                    <label for="{{ form.descricao.id_for_label }}">Descrição</label>
+                </div>
+            </div>
+
+            <div class="mb-3 col-md-12 col-lg-5">
+                <div class="form-floating">
+                    {{ form.valor }}
+                    <label for="{{ form.valor.id_for_label }}">Valor</label>
+                </div>
+            </div>
+
+            <div class="mb-3 col-md-12 col-lg-2">
+                <div class="form-floating">
+                    {{ form.tipo }}
+                    <label for="{{ form.tipo.id_for_label }}">Tipo</label>
+                </div>
+            </div>
+
+            <div class="mb-3 col-md-12 col-lg-2">
+                <div class="form-floating">
+                    {{ form.parcela }}
+                    <label for="{{ form.parcela.id_for_label }}">Parcela</label>
+                </div>
+            </div>
+
+        </div>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a href="{% url 'listar_transacoes' %}" class="btn btn-secondary">Listar Transações</a>
+    </form>
+</div>
+
+{% endblock %}

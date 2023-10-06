@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger
+from django.views.generic import UpdateView
 from .models import Transacao
 from .forms import TransacaoForm
 from django.utils.timezone import now
@@ -97,8 +98,19 @@ def adicionar_transacao(request):
 @login_required(login_url="/auth/login")
 def editar_transacao(request, pk):
     transacao = Transacao.objects.get(pk=pk)
-    form = TransacaoForm(instance=transacao)
-    return render(request, 'plataforma/adicionar_transacao.html', {'form': form})
+
+    if request.method == 'POST':
+        form = TransacaoForm(request.POST, instance=transacao)
+        if form.is_valid():
+            form.save()
+            return redirect('listar_transacoes')
+    else:
+        form = TransacaoForm(instance=transacao)
+
+    return render(request, 'plataforma/editar_transacao.html', {
+        'form': form,
+        'pk': pk
+    })
 
 
 @login_required(login_url="/auth/login")
