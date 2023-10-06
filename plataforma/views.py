@@ -4,6 +4,7 @@ from django.core.paginator import Paginator, PageNotAnInteger
 from .models import Transacao
 from .forms import TransacaoForm
 from django.utils.timezone import now
+from dateutil.relativedelta import relativedelta
 
 
 @login_required(login_url="/auth/login")
@@ -32,7 +33,7 @@ def plataforma(request):
 @login_required(login_url="/auth/login")
 def listar_transacoes(request):
     transacoes = Transacao.objects.filter(
-        usuario=request.user).order_by('-data')
+        usuario=request.user).order_by('data')
 
     registros_por_pagina = 10
     paginator = Paginator(transacoes, registros_por_pagina)
@@ -70,24 +71,38 @@ def adicionar_transacao(request):
     if request.method == 'POST':
         form = TransacaoForm(request.POST)
         if form.is_valid():
-            # Associa transação ao usuário atualmente logado
             nova_transacao = form.save(commit=False)
             nova_transacao.usuario = request.user
 
             num_parcelas = form.cleaned_data.get('parcela')
+            nova_transacao.data = now()
 
             if num_parcelas:
                 valor_parcela = nova_transacao.valor / num_parcelas
                 for _ in range(num_parcelas):
                     nova_transacao.pk = None
                     nova_transacao.valor = valor_parcela
-                    nova_transacao.data = now()
                     nova_transacao.save()
+                    nova_transacao.data = nova_transacao.data + \
+                        relativedelta(months=1)
             else:
-                nova_transacao.data = now()
                 nova_transacao.save()
 
             return redirect('listar_transacoes')
     else:
         form = TransacaoForm()
     return render(request, 'plataforma/adicionar_transacao.html', {'form': form})
+
+
+@login_required(login_url="/auth/login")
+def editar_transacao(request, pk):
+    transacao = Transacao.objects.get(pk=pk)
+    form = TransacaoForm(instance=transacao)
+    return render(request, 'plataforma/adicionar_transacao.html', {'form': form})
+
+
+@login_required(login_url="/auth/login")
+def apagar_transacao(request, pk):
+    transacao = Transacao.objects.get(pk=pk)
+    transacao.delete()
+    return redirect('listar_transacoes')

@@ -24,3 +24,9 @@ body {
     /* Define a camada de para estar acima de outros elementos */
     z-index: 9999;
 }
+
+.botaoSair {
+    font-size: larger;
+    text-decoration: none;
+    color: #000000;
+}
